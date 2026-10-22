@@ -283,25 +283,25 @@ ${url}
               <div>
                 <h4 className="font-display font-bold text-gray-900 text-xl">Acceso Administrativo</h4>
                 <p className="text-xs text-gray-500 mt-1">
-                  Introduce el PIN para gestionar la rifa (PIN por defecto: <strong>1234</strong>)
+                  Introduce la contraseña autorizada para gestionar la rifa
                 </p>
               </div>
 
               <form onSubmit={handleLogin} className="space-y-3">
                 <input
                   type="password"
-                  maxLength={10}
+                  maxLength={40}
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}
-                  placeholder="PIN"
-                  className="w-full text-center text-2xl tracking-widest px-4 py-2.5 rounded-2xl border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono font-bold"
+                  placeholder="Contraseña"
+                  className="w-full text-center text-lg px-4 py-2.5 rounded-2xl border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 font-sans font-bold"
                   autoFocus
                 />
 
                 {pinError && (
                   <p className="text-xs text-rose-600 font-bold flex items-center justify-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5" />
-                    PIN incorrecto. Inténtalo de nuevo.
+                    Contraseña incorrecta. Inténtalo de nuevo.
                   </p>
                 )}
 

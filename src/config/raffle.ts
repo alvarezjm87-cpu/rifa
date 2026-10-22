@@ -33,6 +33,6 @@ export const RAFFLE_CONFIG = {
     source: "Sorteo de la ONCE",
   },
   admin: {
-    defaultPin: "1234",
+    defaultPin: "Rocadillo41",
   }
 };

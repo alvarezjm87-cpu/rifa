@@ -20,7 +20,7 @@ Aplicación web moderna y optimizada para móviles para gestionar una rifa de **
      - ¡Efecto de confeti y confirmación en pantalla!
 
 3. **Panel de Administración con PIN**:
-   - Acceso privado protegido con PIN (por defecto: `1234`).
+   - Acceso privado protegido con contraseña de administrador.
    - Permite al organizador:
      - Marcar números como **Pagados** cuando reciba el Bizum.
      - **Liberar números** si un comprador se echa atrás o no paga.
@@ -68,7 +68,7 @@ Para que cuando una persona reserve un número desde su móvil, a todas las dem�
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-clave-anonima-aqui
-NEXT_PUBLIC_ADMIN_PIN=1234
+NEXT_PUBLIC_ADMIN_PIN=tu_contraseña_aqui
 ```
 
 ---

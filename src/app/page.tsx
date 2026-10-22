@@ -309,7 +309,7 @@ export default function Home() {
               onClick={() => setIsAdminOpen(true)}
               className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-sm transition-all"
             >
-              Probar Admin (PIN: 1234)
+              Acceso Admin
             </button>
           </div>
         )}
