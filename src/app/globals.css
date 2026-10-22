@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 44, 53, 64;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: #f7f9fa;
+  /* Cute subtle notebook dots background pattern */
+  background-image: radial-gradient(#d6e0ea 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+  min-height: 100vh;
+}
+
+/* Washi tape effect */
+.washi-tape {
+  position: relative;
+}
+.washi-tape::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1.5deg);
+  width: 110px;
+  height: 24px;
+  background: rgba(254, 240, 138, 0.85);
+  border-left: 2px dashed rgba(234, 179, 8, 0.4);
+  border-right: 2px dashed rgba(234, 179, 8, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+/* Paper pinned effect */
+.paper-card {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 10px 20px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Sticker badge rotation */
+.sticker-tilt-1 {
+  transform: rotate(-2deg);
+}
+.sticker-tilt-2 {
+  transform: rotate(2.5deg);
+}
+.sticker-tilt-3 {
+  transform: rotate(-1.5deg);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
