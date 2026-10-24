@@ -2,14 +2,15 @@
 
 import React from 'react';
 import { RAFFLE_CONFIG } from '@/config/raffle';
-import { Sparkles, Heart, ShieldCheck, Share2, ImageIcon, Bus, Backpack, Award } from 'lucide-react';
+import { Sparkles, Heart, ShieldCheck, Share2, ImageIcon, Bus, Backpack, Award, Camera } from 'lucide-react';
 
 interface HeaderProps {
   onOpenAdmin: () => void;
   isAdminAuthenticated: boolean;
+  onOpenScreenshot?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenAdmin, isAdminAuthenticated }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenAdmin, isAdminAuthenticated, onOpenScreenshot }) => {
   const handleShare = () => {
     const text = `¡Hola! 👋 Apoya a ${RAFFLE_CONFIG.organizer.name} (${RAFFLE_CONFIG.student.grade}) en su viaje a Fátima con el colegio. Sorteamos una ${RAFFLE_CONFIG.prize.title} por solo ${RAFFLE_CONFIG.pricePerNumber}€. Elige tu número del 00 al 99 aquí:`;
     const url = typeof window !== 'undefined' ? window.location.href : '';
@@ -44,7 +45,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAdmin, isAdminAuthenticate
             <span>Colegio • 1º de la ESO</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenScreenshot && (
+              <button
+                onClick={onOpenScreenshot}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-yellow-300 hover:bg-yellow-200 text-yellow-950 text-xs font-black transition-all shadow-md active:scale-95 border-2 border-white"
+                title="Abrir vista compacta para hacer un pantallazo y subirlo a tus estados"
+              >
+                <Camera className="w-3.5 h-3.5 text-pink-600" />
+                <span>📸 Pantallazo</span>
+              </button>
+            )}
+
             <a
               href="/cartel_rifa_whatsapp.jpg"
               download="cartel_rifa_lulu.jpg"

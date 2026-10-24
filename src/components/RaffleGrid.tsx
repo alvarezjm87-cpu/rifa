@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Ticket } from '@/types/raffle';
-import { Clock, Check, Search, Sparkles } from 'lucide-react';
+import { Clock, Check, Search, Sparkles, Camera, Grid } from 'lucide-react';
 
 interface RaffleGridProps {
   tickets: Ticket[];
@@ -10,6 +10,7 @@ interface RaffleGridProps {
   isAdmin: boolean;
   onAdminAction?: (ticket: Ticket) => void;
   filter: 'todos' | 'libres' | 'reservados' | 'pagados';
+  onOpenScreenshot?: () => void;
 }
 
 export const RaffleGrid: React.FC<RaffleGridProps> = ({
@@ -18,9 +19,11 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
   isAdmin,
   onAdminAction,
   filter,
+  onOpenScreenshot,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [isCompact, setIsCompact] = useState(false);
 
   const showFeedback = (msg: string) => {
     setFeedbackMessage(msg);
@@ -58,8 +61,8 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
 
   return (
     <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-lg border-2 border-indigo-100">
-      {/* Grid header & fast search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 pb-4 border-b-2 border-slate-100">
+      {/* Grid header & fast search & view toggles */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-slate-100">
         <div>
           <h3 className="text-xl sm:text-2xl font-black font-display text-gray-900 tracking-tight flex items-center gap-2">
             <span>Elige tu Papeleta</span>
@@ -72,25 +75,55 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
           </p>
         </div>
 
-        {/* Quick search input */}
-        <div className="relative w-full sm:w-56">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
-          <input
-            type="text"
-            maxLength={2}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar número (ej: 07)..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-2xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-bold"
-          />
-          {searchQuery && (
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          {/* Toggle 10x10 compact for mobile */}
+          <button
+            type="button"
+            onClick={() => setIsCompact(!isCompact)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 text-xs font-bold transition-all shadow-xs ${
+              isCompact
+                ? 'bg-indigo-600 border-indigo-600 text-white'
+                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+            }`}
+            title="Ver los 100 números juntos en 10 columnas"
+          >
+            <Grid className="w-3.5 h-3.5" />
+            <span>{isCompact ? 'Vista 10x10' : 'Ver 10x10'}</span>
+          </button>
+
+          {/* Dedicated Screenshot view button */}
+          {onOpenScreenshot && (
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-2 text-xs text-gray-400 hover:text-gray-600 font-bold"
+              type="button"
+              onClick={onOpenScreenshot}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 border-2 border-amber-300 text-xs font-black transition-all shadow-sm active:scale-95"
+              title="Abrir tarjeta lista para hacer pantallazo para WhatsApp"
             >
-              ✕
+              <Camera className="w-3.5 h-3.5 text-pink-700" />
+              <span>📸 Pantallazo</span>
             </button>
           )}
+
+          {/* Quick search input */}
+          <div className="relative flex-1 sm:flex-initial w-full sm:w-44">
+            <Search className="w-4 h-4 absolute left-3 top-2 text-gray-400" />
+            <input
+              type="text"
+              maxLength={2}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar Nº..."
+              className="w-full pl-9 pr-3 py-1 text-xs rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-bold"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1.5 text-xs text-gray-400 hover:text-gray-600 font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -105,7 +138,7 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
       )}
 
       {/* Numbers Grid */}
-      <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-2.5">
+      <div className={`grid gap-1 sm:gap-2 ${isCompact ? 'grid-cols-10' : 'grid-cols-5 sm:grid-cols-10'}`}>
         {filteredTickets.map((ticket) => {
           const isLibre = ticket.status === 'libre';
           const isReservado = ticket.status === 'reservado';
@@ -117,7 +150,8 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
               type="button"
               onClick={() => handleClick(ticket)}
               className={`
-                group relative flex flex-col items-center justify-center p-2 rounded-2xl border-2 transition-all duration-150 select-none aspect-square
+                group relative flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border-2 transition-all duration-150 select-none aspect-square
+                ${isCompact ? 'p-0.5 sm:p-1.5' : 'p-2'}
                 ${
                   isLibre
                     ? 'bg-emerald-50 hover:bg-emerald-400 hover:text-white border-emerald-300 hover:border-emerald-500 hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer shadow-xs'
@@ -132,7 +166,8 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
               {/* Number display */}
               <span
                 className={`
-                  font-black text-xl sm:text-2xl font-display tracking-tight transition-colors
+                  font-black font-display tracking-tight transition-colors
+                  ${isCompact ? 'text-sm sm:text-xl font-mono' : 'text-xl sm:text-2xl'}
                   ${isLibre ? 'text-emerald-800 group-hover:text-white' : ''}
                   ${isReservado ? 'text-amber-950' : ''}
                   ${isPagado ? 'text-slate-400 line-through decoration-slate-400' : ''}
@@ -141,26 +176,28 @@ export const RaffleGrid: React.FC<RaffleGridProps> = ({
                 {ticket.formattedNumber}
               </span>
 
-              {/* Status indicator */}
-              <div className="mt-0.5 flex items-center gap-0.5">
-                {isLibre && (
-                  <span className="text-[10px] font-bold text-emerald-700 group-hover:text-emerald-100 tracking-tight">
-                    ¡Libre!
-                  </span>
-                )}
-                {isReservado && (
-                  <span className="flex items-center gap-0.5 text-[9px] font-bold text-amber-800">
-                    <Clock className="w-2.5 h-2.5" />
-                    <span>Res.</span>
-                  </span>
-                )}
-                {isPagado && (
-                  <span className="flex items-center gap-0.5 text-[9px] font-bold text-slate-500">
-                    <Check className="w-2.5 h-2.5 text-emerald-600" />
-                    <span>OK</span>
-                  </span>
-                )}
-              </div>
+              {/* Status indicator (hidden in compact mobile view to maintain maximum readability of numbers) */}
+              {!isCompact && (
+                <div className="mt-0.5 flex items-center gap-0.5">
+                  {isLibre && (
+                    <span className="text-[10px] font-bold text-emerald-700 group-hover:text-emerald-100 tracking-tight">
+                      ¡Libre!
+                    </span>
+                  )}
+                  {isReservado && (
+                    <span className="flex items-center gap-0.5 text-[9px] font-bold text-amber-800">
+                      <Clock className="w-2.5 h-2.5" />
+                      <span>Res.</span>
+                    </span>
+                  )}
+                  {isPagado && (
+                    <span className="flex items-center gap-0.5 text-[9px] font-bold text-slate-500">
+                      <Check className="w-2.5 h-2.5 text-emerald-600" />
+                      <span>OK</span>
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Dot badge for admin */}
               {isAdmin && ticket.buyer_name && (

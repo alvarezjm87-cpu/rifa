@@ -18,6 +18,7 @@ import { RaffleGrid } from '@/components/RaffleGrid';
 import { TicketModal } from '@/components/TicketModal';
 import { AdminModal } from '@/components/AdminModal';
 import { WinnerChecker } from '@/components/WinnerChecker';
+import { ScreenshotModal } from '@/components/ScreenshotModal';
 import { Database, ShieldCheck, Heart } from 'lucide-react';
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [isScreenshotOpen, setIsScreenshotOpen] = useState(false);
   const [filter, setFilter] = useState<'todos' | 'libres' | 'reservados' | 'pagados'>('todos');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -292,6 +294,7 @@ export default function Home() {
       <Header
         onOpenAdmin={() => setIsAdminOpen(true)}
         isAdminAuthenticated={isAdminAuthenticated}
+        onOpenScreenshot={() => setIsScreenshotOpen(true)}
       />
 
       {/* Main Container */}
@@ -334,6 +337,7 @@ export default function Home() {
             setIsAdminOpen(true);
           }}
           filter={filter}
+          onOpenScreenshot={() => setIsScreenshotOpen(true)}
         />
 
         {/* ONCE Lottery Winner Checker */}
@@ -369,6 +373,14 @@ export default function Home() {
         onAuthenticate={handleAuthenticate}
         onLogout={handleLogout}
         onUpdateStatus={handleAdminUpdateStatus}
+      />
+
+      {/* Screenshot / Compact 100-number view Modal for Mobile Statuses */}
+      <ScreenshotModal
+        isOpen={isScreenshotOpen}
+        onClose={() => setIsScreenshotOpen(false)}
+        tickets={tickets}
+        stats={stats}
       />
     </main>
   );
