@@ -127,7 +127,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   const getPersonalizedMessage = (group: BuyerGroup) => {
-    const url = typeof window !== 'undefined' ? window.location.origin : '';
+    const url = typeof window !== 'undefined' ? window.location.origin : 'https://rifa-eight-mu.vercel.app';
     const nums = group.numbers.join(', ');
     return `¡Hola ${group.name}! 👋🎒 Te escribo de parte de Lulú (1º de la ESO) para darte una gran noticia: ¡ya se han completado los números de la rifa para el viaje a Fátima! 🎉
 
@@ -139,6 +139,36 @@ Podrás comprobar el resultado en directo en nuestra web:
 ${url}
 
 ¡Muchísima suerte y gracias de corazón por colaborar con mi viaje! ❤️`;
+  };
+
+  // Mensaje oficial de confirmación de pago y envío de número
+  const getPaymentConfirmationMessage = (ticket: Ticket) => {
+    const url = typeof window !== 'undefined' ? window.location.origin : 'https://rifa-eight-mu.vercel.app';
+    const name = ticket.buyer_name ? ticket.buyer_name.trim() : '';
+    return `¡Hola${name ? ` ${name}` : ''}! 👋🎒
+¡Bizum recibido y confirmado con éxito! 🎉
+
+Tu participación para la rifa del viaje a Fátima de Lulú (1º ESO) ya está asegurada:
+🎟️ Tu número oficial asignado es el: *${ticket.formattedNumber}*
+🍖 Premio: *Paletilla de Jamón Ibérico + Queso artesano* 🧀
+
+El sorteo se celebrará en cuanto completemos los 100 números con las 2 últimas cifras del próximo sorteo de la ONCE.
+
+Puedes consultar el tablero en vivo aquí:
+${url}
+
+¡Muchísima suerte y muchísimas gracias por colaborar con mi viaje! ❤️✨`;
+  };
+
+  const handleMarkPaidAndNotify = async (ticket: Ticket) => {
+    await onUpdateStatus(ticket.number, 'pagado');
+    if (ticket.buyer_phone) {
+      const cleanPhone = ticket.buyer_phone.replace(/\D/g, '');
+      const waUrl = `https://wa.me/34${cleanPhone}?text=${encodeURIComponent(
+        getPaymentConfirmationMessage({ ...ticket, status: 'pagado' })
+      )}`;
+      window.open(waUrl, '_blank');
+    }
   };
 
   const getGeneralBroadcastMessage = () => {
@@ -599,12 +629,20 @@ ${url}
                                 {t.status === 'reservado' && (
                                   <>
                                     <button
-                                      onClick={() => onUpdateStatus(t.number, 'pagado')}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold text-[11px] shadow-sm transition-all"
-                                      title="Confirmar recepción del Bizum"
+                                      onClick={() => handleMarkPaidAndNotify(t)}
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold text-[11px] shadow-sm transition-all active:scale-95"
+                                      title="Confirmar Bizum y abrir WhatsApp para mandarle el número"
                                     >
                                       <Check className="w-3.5 h-3.5" />
-                                      <span>Marcar Pagado</span>
+                                      <span>Confirmar y Enviar WhatsApp</span>
+                                    </button>
+
+                                    <button
+                                      onClick={() => onUpdateStatus(t.number, 'pagado')}
+                                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] transition-all"
+                                      title="Solo marcar como pagado sin abrir WhatsApp"
+                                    >
+                                      <span>Solo Marcar</span>
                                     </button>
 
                                     <button
@@ -619,14 +657,31 @@ ${url}
                                 )}
 
                                 {t.status === 'pagado' && (
-                                  <button
-                                    onClick={() => onUpdateStatus(t.number, 'libre', '', '')}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gray-100 hover:bg-rose-50 hover:text-rose-700 text-gray-600 font-bold text-[11px] transition-all"
-                                    title="Liberar este número"
-                                  >
-                                    <RotateCcw className="w-3 h-3" />
-                                    <span>Liberar</span>
-                                  </button>
+                                  <>
+                                    {t.buyer_phone && (
+                                      <a
+                                        href={`https://wa.me/34${t.buyer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                          getPaymentConfirmationMessage(t)
+                                        )}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-display font-bold text-[11px] shadow-sm transition-all"
+                                        title="Enviar o reenviar número y justificante por WhatsApp"
+                                      >
+                                        <MessageSquare className="w-3.5 h-3.5" />
+                                        <span>Enviar Nº por WhatsApp</span>
+                                      </a>
+                                    )}
+
+                                    <button
+                                      onClick={() => onUpdateStatus(t.number, 'libre', '', '')}
+                                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl bg-gray-100 hover:bg-rose-50 hover:text-rose-700 text-gray-600 font-bold text-[11px] transition-all"
+                                      title="Liberar este número"
+                                    >
+                                      <RotateCcw className="w-3 h-3" />
+                                      <span>Liberar</span>
+                                    </button>
+                                  </>
                                 )}
 
                                 {t.status === 'libre' && (
